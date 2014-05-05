@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include "data.h"
-#include "MinMax.h"
 
 //included for resizing of windows
 #define _WIN32_WINNT 0x0500
@@ -30,7 +29,7 @@ void main()
 	Data game;
 
 	//determine Player 1's type
-	cout << "What type is player 1?\n 0: Player\n 1: MiniMax\n";
+	cout << "What type is player 1?\n 0: Player\n 1: Random\n 2: Greedy\n";
 	cin >> type;
 
 	switch (type)
@@ -44,14 +43,18 @@ void main()
 		game.initializePlayer(initials, type);
 		break;
 	case 1:
-		cout << "Player 1 is Easy";
-		game.initializePlayer("M1",type);
+		cout << "Player 1 is Random\n";
+		game.initializePlayer("R1",type);
+		break;
+	case 2:
+		cout << "Player 1 is Greedy\n";
+		game.initializePlayer("G1", type);
 		break;
 	}
 
 	initials = "";
 	//determine Player 2's type
-	cout << "What type is player 2?\n 0: Player\n 1: MiniMax\n";
+	cout << "What type is player 2?\n 0: Player\n 1: Random\n 2: Greedy\n";
 	cin >> type;
 
 	switch (type)
@@ -65,35 +68,77 @@ void main()
 		game.initializePlayer(initials, type);
 		break;
 	case 1:
-		cout << "Player 2 is MiniMax";
-		game.initializePlayer("M1",type);
+		cout << "Player 2 is Random\n";
+		game.initializePlayer("R2",type);
+		break;
+	case 2:
+		cout << "Player 2 is Greedy\n";
+		game.initializePlayer("G2", type);
 		break;
 	}
-
+	game.refreshGS();
 	//play the game
 	do{
 		do
 		{
 			game.refresh();
+			//get games remaining lines
+			vector<Line*> movesLeft = game.getFreeLines();
+			//get game's free squares
+			vector<Square*> squaresLeft = game.getFreeSquares();
+			// generate a random number
+			int random = rand() % movesLeft.size();
+			//declaration of move variables
 			char c1, c2;
 			int i1, i2;
-			//get input from human or minimax algorithm
-			if (game.getCurrentPlayerAI() == 0) //human player
+			//determine what input to get
+			switch (game.getCurrentPlayerAI())
 			{
-				//human player
+			case 0: //human
+			{
 				cout << endl << endl << "What is your next move(example a1a2 or A1B1): ";
 				cin >> c1 >> i1 >> c2 >> i2;
 			}
-			else
+				break;
+			case 1: //random
 			{
-				char *minMaxMove;
-				//minimax algorithm
-				minMaxMove = game.MinMax();
-				c1 = minMaxMove[0];
-				i1 = minMaxMove[1];
-				c2 = minMaxMove[2];
-				i2 = minMaxMove[3];
+				//grab the input of random line
+				c1 = movesLeft[random]->getChar1();
+				i1 = movesLeft[random]->getInt1();
+				c2 = movesLeft[random]->getChar2();
+				i2 = movesLeft[random]->getInt2();
 			}
+			break;
+			case 2: //greedy
+			{
+				//if square can be captured, grab it
+				Line *tmp = movesLeft[random];
+				for (vector<Square*>::iterator iter = squaresLeft.begin(); iter != squaresLeft.end(); iter++)
+				{
+					//if only one line left to capture, capture it
+					if ((*iter)->linesLeftToCapture() == 1)
+					{
+						tmp = (*iter)->lineNotCaught();
+						break;
+					}
+				}
+				c1 = tmp->getChar1();
+				i1 = tmp->getInt1();
+				c2 = tmp->getChar2();
+				i2 = tmp->getInt2();
+				//if all line captures will lead to square capture on next turn, pick random move
+			}
+			break;
+			case 3: //double-dealing
+				//need function to check for chains
+				//grab largest chain and iterate through it
+				//if currentChain is NULL, grab new chain else random line
+				//with 3 lines left to capture in chain
+				//grab last line, leaving middle 2 lines for capture
+				break;
+			}
+			//END OF Switch
+
 			game.giveMove(c1, i1, c2, i2);
 			//repeat until checkEndGame
 			

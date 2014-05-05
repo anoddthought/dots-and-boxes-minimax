@@ -44,9 +44,6 @@ bool Line::capture(string name)
 //determine what the input string is (example: a1a2 for hLine[0][0])
 void Line::setInput()
 {
-	input = "";
-	char char1, char2;
-	int int1, int2;
 	//if horizontal, chars are equal
 	if (type == 0)
 	{
@@ -67,9 +64,4 @@ void Line::setInput()
 		char1 = y + 65;
 		char2 = char1 + 1;
 	}
-	
-	input[0] = char1;
-	input[1] = int1;
-	input[2] = char2;
-	input[3] = int2;
 }

@@ -19,9 +19,9 @@ Data::Data()
 	//initialize whoseTurn and amount of Players to 0
 	whoseTurn = 0; 
 	amtPlayers = 0;
+	count = 0;
 	
-	
-	//TODO populate freelist
+	//TODO populate freeLineList and freeSquareList
 	populateList();
 
 }
@@ -45,12 +45,28 @@ void Data::initializePlayer(string n, int x)
 //checks if user would like to play again
 bool Data::endGame()
 {
+	//increment total game score for person with highest score
+	if (playerList[0]->getGameScore() > playerList[1]->getGameScore())
+	{
+		playerList[0]->incrementTotalScore();
+	}
+	else
+		playerList[1]->incrementTotalScore();
+	refreshGS();
 	//input variable
 	char cont = ' ';
 	while (cont != 'y' && cont != 'n')
 	{
-		cout << "\nWould you like to continue playing with same players?(y for yes, n for no)";
-		cin >> cont;
+		cout << "\nWould you like to continue playing \nwith same players?(y for yes, n for no)";
+		if (count != 100)
+		{
+			cont = 'y';
+		}
+		else
+		{
+			cin >> cont;
+		}
+		count++;
 		cout << "\nI do not understand your input.";
 	}
 	if (cont == 'n')
@@ -77,6 +93,7 @@ bool Data::endGame()
 				vLine[y][x].reset();	//x and y switched for vLine[8][7]
 			}
 		}
+		populateList();		//repopulate freeLineList with all the lines
 		return false;		//returns false for do not end the game
 	}
 }
@@ -178,6 +195,9 @@ void Data::refresh()
 				{
 					//capture horizontal line
 					hLine[x][y].capture(playerList[whoseTurn]->getName());
+					//delete line from freeLineList
+					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &hLine[x][y]);
+					freeLineList.erase(it);
 					//figure out square Numbers associated with line captured
 					int bottomSqr = y * 7 + x;
 					int topSqr = bottomSqr - 7;
@@ -193,9 +213,19 @@ void Data::refresh()
 						//player captured a square do not advance to next turn and increment player's gamescore
 						//need to determine if player captured one or two squares with the one line
 						if (test1)
+						{
 							playerList[whoseTurn]->incrementGameScore();
+							//top square captured, delete it from free square list
+							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[topSqr]);
+							freeSquareList.erase(it);
+						}
 						if (test2)
+						{
 							playerList[whoseTurn]->incrementGameScore();
+							//bottom square captured, delete from free square list
+							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[bottomSqr]);
+							freeSquareList.erase(it);
+						}
 					}
 					else
 						nextTurn();
@@ -225,6 +255,9 @@ void Data::refresh()
 				{
 					//capture vertical line
 					vLine[x][y].capture(playerList[whoseTurn]->getName());
+					//delete line from freeLineList
+					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &vLine[x][y]);
+					freeLineList.erase(it);
 					//determine square number to left and right of vertical line	
 					int rightSqr = y * 7 + x;
 					int leftSqr = rightSqr - 1;
@@ -295,7 +328,7 @@ void Data::populateList()
 			hLine[x][y].setType(0);
 			hLine[x][y].setInput();
 			//add Line item to free list
-			//freelist
+			freeLineList.push_back(&hLine[x][y]);
 		}
 	}
 	//add vertical lines
@@ -309,13 +342,24 @@ void Data::populateList()
 			vLine[x][y].setType(1);
 			vLine[x][y].setInput();
 			//add Line item to free list
-			//freelist.push_back(&vLine[x][y]);
+			freeLineList.push_back(&vLine[x][y]);
 		}
+	}
+	//populate square list with all squares
+	//initialize square object with pointers to lines that make it up
+	for (int x = 0; x < 49; x++)
+	{
+		Line *top = &hLine[x % 7][x / 7];
+		Line *bottom = &hLine[x % 7][x / 7 + 1];
+		Line *left = &vLine[x % 7][x / 7];
+		Line *right = &vLine[(x % 7) + 1][x / 7];
+		arrySqr[x].setLines(left, right, top, bottom);
+		freeSquareList.push_back(&arrySqr[x]);
 	}
 
 }
 
-//METHODS FOR MINIMAX
+/*//METHODS FOR MINIMAX
 //add a line into gamestate
 //returns number of boxes completed(0,1, or 2)
 int Data::addLine(Line line)
@@ -377,4 +421,4 @@ Line Data::MinMove(Data gameClone)
 //				best_move < -move;
 	return best_move;
 
-}
+}*/

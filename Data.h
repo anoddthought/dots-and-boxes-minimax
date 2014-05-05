@@ -15,9 +15,11 @@ class Data : Line, Square
 	Square arrySqr[49];			//array of squares
 	vector<Player*> playerList;	//list of players
 	int whoseTurn;				//indicates whose turn in playerList it is
-	vector<Line*> freelist;		//list of Lines that have not been captured
+	vector<Line*> freeLineList;		//list of Lines that have not been captured
+	vector<Square*> freeSquareList;
 	char char1, char2;
 	int int1, int2;
+	int count;
 public:
 	Data();
 	~Data() {};
@@ -34,16 +36,6 @@ public:
 		char1 = toupper(c1); int1 = i1; char2 = toupper(c2); int2 = i2; 
 	}
 	void initializePlayer(string, int);
-
-	//methods used for minimax
-	char* MinMax();
-	Line MaxMove(Data);
-	Line MinMove(Data);
-	int getPlayer() { return whoseTurn; }
-	vector<Line**> getRemainingLines() { return freelist; }
-	int addLine(Line line);
-	Data clone();
-	Line evalGameState() { Line tmp = freelist.front(); return tmp; }
-	Data applyMove(Line);
+	vector<Line*> getFreeLines() { return freeLineList; }
+	vector<Square*> getFreeSquares() { return freeSquareList; }
 };
-

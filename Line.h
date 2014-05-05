@@ -7,7 +7,8 @@ class Line
 	bool on;								//false for off, true for on
 	string owner;							//contains owner's name
 	int x, y;								//line coordinates
-	char* input;
+	char char1, char2;
+	int int1, int2;
 	int type;								//0 = horizontal, 1 = vertical
 public:
 	Line() { on = false, owner = ""; }		//constructor no parameters
@@ -22,7 +23,10 @@ public:
 	void setY(int tmp) { y = tmp; }			//setter and getter for Y
 	int getY() { return y; }
 	void setInput();						//setter and getter for inputString 
-	char* getInput() { return input; };
+	char getChar1() { return char1; }
+	char getChar2() { return char2; }
+	int getInt1() { return int1; }
+	int getInt2() { return int2; }
 	void setType(int x) { type = x; }
 	//copy constructor
 	Line(const Line& p)
@@ -31,7 +35,10 @@ public:
 		owner = p.owner;
 		x = p.x;
 		y = p.y;
-		input = p.input;
+		char1 = p.char1;
+		char2 = p.char2;
+		int1 = p.int1;
+		int2 = p.int2;
 		type = p.type;
 	}
 	//overload = operator
@@ -42,7 +49,10 @@ public:
 		owner = p.owner;
 		x = p.x;
 		y = p.y;
-		input = p.input;
+		char1 = p.char1;
+		char2 = p.char2;
+		int1 = p.int1;
+		int2 = p.int2;
 		type = p.type;
 		return p;
 	}
