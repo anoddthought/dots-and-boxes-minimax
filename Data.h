@@ -23,7 +23,7 @@ class Data : Line, Square
 public:
 	Data();
 	~Data() {};
-	void refresh();								//plays thru the game and refreshes gamescreen
+	void applyMove(char,int,char,int);								//plays thru the game and refreshes gamescreen
 	string getCurrentPlayer() { return playerList[whoseTurn]->getName(); }
 	int getCurrentPlayerAI() { return playerList[whoseTurn]->getAI(); }
 	void nextTurn() { whoseTurn++; if (whoseTurn == amtPlayers) whoseTurn = 0; }		//next Player's Turn
@@ -31,11 +31,8 @@ public:
 	bool endGame();								//endGame done here including displaying results and setting up next game
 	void refreshGS();							//used in refresh() as the game screen refresher
 	void populateList();						//populates list of lines left to be captured
-	void giveMove(char c1, int i1, char c2, int i2) 
-	{ 
-		char1 = toupper(c1); int1 = i1; char2 = toupper(c2); int2 = i2; 
-	}
 	void initializePlayer(string, int);
 	vector<Line*> getFreeLines() { return freeLineList; }
 	vector<Square*> getFreeSquares() { return freeSquareList; }
+
 };

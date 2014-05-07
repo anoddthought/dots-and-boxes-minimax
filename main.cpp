@@ -76,12 +76,11 @@ void main()
 		game.initializePlayer("G2", type);
 		break;
 	}
-	game.refreshGS();
 	//play the game
 	do{
 		do
 		{
-			game.refresh();
+			game.refreshGS();
 			//get games remaining lines
 			vector<Line*> movesLeft = game.getFreeLines();
 			//get game's free squares
@@ -139,7 +138,7 @@ void main()
 			}
 			//END OF Switch
 
-			game.giveMove(c1, i1, c2, i2);
+			game.applyMove(c1, i1, c2, i2);
 			//repeat until checkEndGame
 			
 		}while(game.checkEndGame() == false);

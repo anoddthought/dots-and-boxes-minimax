@@ -57,17 +57,17 @@ bool Data::endGame()
 	char cont = ' ';
 	while (cont != 'y' && cont != 'n')
 	{
-		cout << "\nWould you like to continue playing \nwith same players?(y for yes, n for no)";
 		if (count != 100)
 		{
 			cont = 'y';
+			count++;
 		}
 		else
 		{
+			cont = ' ';
+			cout << "\nWould you like to continue playing \nwith same players?(y for yes, n for no)";
 			cin >> cont;
 		}
-		count++;
-		cout << "\nI do not understand your input.";
 	}
 	if (cont == 'n')
 		return true;	//tell user to endGame
@@ -170,8 +170,10 @@ void Data::refreshGS()
 
 //update game screen to standard game screen with gameboard at top and user input at bottom
 //will increment whoseTurn to next Player if user captures a line
-void Data::refresh()
+void Data::applyMove(char char1, int int1, char char2, int int2)
 {
+	char1 = toupper(char1);
+	char2 = toupper(char2);
 	//if both chars are between A&H and both ints are between 1&8 then input is ok
 	if ((char1 >= 65 && char1 <= 72) && (char2 >= 65 && char2 <= 72)
 		&& (int1 >= 1 && int1 <= 8) && (int2 >= 1 && int2 <= 8))
@@ -237,7 +239,6 @@ void Data::refresh()
 			{
 				cout << "\nThe dots are not immediately next to each other. \nPlease try again.";
 			}
-
 		}
 		///VERTICAL LINE CAPTURE CHECK///
 		else if (int1 == int2)
@@ -290,22 +291,16 @@ void Data::refresh()
 		else
 			cout << "\n The dots are not immediately next to each other. \nPlease try again. ";
 	}
-	////End check for line and square captures
-	///////check for endGame()////////
-	if (checkEndGame())
-		endGame();
-	//else continue game
-	//refresh game screen
-	refreshGS();
+	//End check for line and square captures
 }
 
 //Checks to see if all squares are on and returns true
 bool Data::checkEndGame()
 {
-	for (int count = 0; count < 49; count++)
+	for (int x = 0; x < 49; x++)
 	{
 		//check to see if Square is on
-		if (!arrySqr[count].getOn())
+		if (!arrySqr[x].getOn())
 		{
 			//if it is not on return false and continue game
 			return false;
