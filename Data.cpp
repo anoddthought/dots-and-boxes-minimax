@@ -14,17 +14,20 @@
 #include "Line.h"
 using namespace std;
 
-Data::Data()
+Data::Data(int x)
 {
 	//initialize whoseTurn and amount of Players to 0
 	whoseTurn = 0; 
 	amtPlayers = 0;
-	count = 0;
-	
-	//TODO populate freeLineList and freeSquareList
+	count = 1;
+	gameLength = x; 
 	populateList();
-
 }
+
+Data::~Data()
+{
+}
+
 
 //Data member functions
 //handles next pointer cases and initializes new Player with name given by user
@@ -52,27 +55,15 @@ bool Data::endGame()
 	}
 	else
 		playerList[1]->incrementTotalScore();
-	refreshGS();
-	//input variable
-	char cont = ' ';
-	while (cont != 'y' && cont != 'n')
+
+	
+	if (count == gameLength)
 	{
-		if (count != 100)
-		{
-			cont = 'y';
-			count++;
-		}
-		else
-		{
-			cont = ' ';
-			cout << "\nWould you like to continue playing \nwith same players?(y for yes, n for no)";
-			cin >> cont;
-		}
+		return false;
 	}
-	if (cont == 'n')
-		return true;	//tell user to endGame
 	else
 	{
+		count++;
 		//user wants to keep playing reset gameScore and whoseTurn
 		for (int x = 0; x < amtPlayers; x++)
 		{
@@ -93,8 +84,7 @@ bool Data::endGame()
 				vLine[y][x].reset();	//x and y switched for vLine[8][7]
 			}
 		}
-		populateList();		//repopulate freeLineList with all the lines
-		return false;		//returns false for do not end the game
+		return true;		//returns false for do not end the game
 	}
 }
 
@@ -158,12 +148,12 @@ void Data::refreshGS()
 	}
 	cout << endl << endl << endl;
 
-	cout << " Player     Game Score     Total Wins " << endl;
+	cout << " Player     Game Score     Total Wins     Total Captured Squares" << endl;
 	//display Player names and scores
 	for (int count = 0; count < amtPlayers; count++)
 	{
 		cout << "   " << playerList[count]->getName() << "       " << setw(10) << playerList[count]->getGameScore()
-			<< "     " << setw(10) << playerList[count]->getTotalScore() << endl;
+			<< "     " << setw(10) << playerList[count]->getTotalScore() << "     " << setw(22) << playerList[count]->getTotalGameScore() << endl;
 	}
 	////END DISPLAY OF GAME BOARD////
 }
@@ -197,9 +187,6 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 				{
 					//capture horizontal line
 					hLine[x][y].capture(playerList[whoseTurn]->getName());
-					//delete line from freeLineList
-					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &hLine[x][y]);
-					freeLineList.erase(it);
 					//figure out square Numbers associated with line captured
 					int bottomSqr = y * 7 + x;
 					int topSqr = bottomSqr - 7;
@@ -217,23 +204,20 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 						if (test1)
 						{
 							playerList[whoseTurn]->incrementGameScore();
-							//top square captured, delete it from free square list
-							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[topSqr]);
-							freeSquareList.erase(it);
 						}
 						if (test2)
 						{
 							playerList[whoseTurn]->incrementGameScore();
-							//bottom square captured, delete from free square list
-							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[bottomSqr]);
-							freeSquareList.erase(it);
 						}
 					}
 					else
 						nextTurn();
 				}
 				else
+				{
 					cout << "Line already captured. Try again. " << endl;
+					cout << hLine[x][y].getChar1() << hLine[x][y].getInt1() << hLine[x][y].getChar2() << hLine[x][y].getInt2();
+				}
 			}
 			else
 			{
@@ -256,9 +240,6 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 				{
 					//capture vertical line
 					vLine[x][y].capture(playerList[whoseTurn]->getName());
-					//delete line from freeLineList
-					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &vLine[x][y]);
-					freeLineList.erase(it);
 					//determine square number to left and right of vertical line	
 					int rightSqr = y * 7 + x;
 					int leftSqr = rightSqr - 1;
@@ -281,7 +262,11 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 						nextTurn();
 				}
 				else
+				{
 					cout << "Line already captured. Try again. " << endl;
+					cout << vLine[x][y].getChar1() << vLine[x][y].getInt1() << vLine[x][y].getChar2() << vLine[x][y].getInt2();
+
+				}
 			}
 			else
 			{
@@ -322,8 +307,6 @@ void Data::populateList()
 			hLine[x][y].setY(y);
 			hLine[x][y].setType(0);
 			hLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&hLine[x][y]);
 		}
 	}
 	//add vertical lines
@@ -336,8 +319,6 @@ void Data::populateList()
 			vLine[x][y].setY(y);
 			vLine[x][y].setType(1);
 			vLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&vLine[x][y]);
 		}
 	}
 	//populate square list with all squares
@@ -348,12 +329,52 @@ void Data::populateList()
 		Line *bottom = &hLine[x % 7][x / 7 + 1];
 		Line *left = &vLine[x % 7][x / 7];
 		Line *right = &vLine[(x % 7) + 1][x / 7];
-		arrySqr[x].setLines(left, right, top, bottom);
-		freeSquareList.push_back(&arrySqr[x]);
+		arrySqr[x].setLines(left, right, top, bottom);;
 	}
 
 }
 
+//undo the last move made by Line *ptr
+void Data::undoMove(Line* lastMove)
+{
+	//default, decrement the turn is true because no squares were captured
+	bool decrementWhoseTurn = true;
+	//undo the capture, mark it as free
+	lastMove->reset();
+
+	//iterate through the square array
+	for (int x = 0; x < 49; x++)
+	{
+		//if line is in the square
+		if (arrySqr[x].lineIsInSquare(lastMove))
+		{
+			//if the square is on, uncapture it
+			if (arrySqr[x].getOn())
+			{
+				//if the square was captured, decrement score
+				playerList[whoseTurn]->decrementGameScore();
+				//previous turn is the same as this turn
+				decrementWhoseTurn = false;
+				arrySqr[x].reset();
+			}
+		}
+	}
+
+	//check boolean to see if we should decrement the score
+	if (decrementWhoseTurn)
+	{
+		if (whoseTurn == 0) whoseTurn = 1;
+		else whoseTurn = 0;
+	}
+}
+
+int Data::eval(int max, int min)
+{
+	//result is evaluated as difference between the max player's score - min player's score
+	//the higher the number, the more points max got altogether
+	int result = playerList[max]->getGameScore() - playerList[min]->getGameScore();
+	return result;
+}
 /*//METHODS FOR MINIMAX
 //add a line into gamestate
 //returns number of boxes completed(0,1, or 2)
@@ -417,3 +438,46 @@ Line Data::MinMove(Data gameClone)
 	return best_move;
 
 }*/
+
+vector<Line*> Data::getFreeLines()
+{
+	vector<Line*> freeLineList;
+	//add horizontal lines
+	for (int x = 0; x < 7; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			if (!hLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&hLine[x][y]);
+		}
+	}
+	//add vertical lines
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 7; y++)
+		{
+			if (!vLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&vLine[x][y]);
+		}
+	}
+	return freeLineList;
+}
+
+vector<Square*> Data::getFreeSquares()
+{
+	vector<Square*> freeSquareList;
+	//populate square list with all squares
+	//initialize square object with pointers to lines that make it up
+	for (int x = 0; x < 49; x++)
+	{
+		Line *top = &hLine[x % 7][x / 7];
+		Line *bottom = &hLine[x % 7][x / 7 + 1];
+		Line *left = &vLine[x % 7][x / 7];
+		Line *right = &vLine[(x % 7) + 1][x / 7];
+		arrySqr[x].setLines(left, right, top, bottom);
+		freeSquareList.push_back(&arrySqr[x]);
+	}
+	return freeSquareList;
+}

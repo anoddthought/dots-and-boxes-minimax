@@ -11,13 +11,16 @@ protected:
 	int total_score;		//total amount of games the player has won
 	int game_score;			//score of the game being played currently
 	int ai;					//type of ai, human = 0, minimax = 1
+	int total_game_score;	//total squares captured in all games played
 
 public:
 	~Player();
 	//functions handling game_score
 	void resetGameScore() { game_score = 0; }
-	void incrementGameScore() { game_score++; }
+	void incrementGameScore() { total_game_score++; game_score++; }
+	void decrementGameScore() { total_game_score--;  game_score--; }
 	int getGameScore() { return game_score; }
+	int getTotalGameScore() { return total_game_score; }
 
 	//functions handling total_score
 	void resetAll() { total_score = 0; game_score = 0; }		//resets both scores
@@ -35,7 +38,7 @@ public:
 	//function to determine the next move, modified in child classes for each type of player) {};
 
 	//constructor no-arg
-	Player() { game_score = 0; total_score = 0; }
+	Player() { game_score = 0; total_score = 0; total_game_score = 0; }
 
 	//copy constructor
 	Player(const Player& p)

@@ -15,24 +15,26 @@ class Data : Line, Square
 	Square arrySqr[49];			//array of squares
 	vector<Player*> playerList;	//list of players
 	int whoseTurn;				//indicates whose turn in playerList it is
-	vector<Line*> freeLineList;		//list of Lines that have not been captured
-	vector<Square*> freeSquareList;
 	char char1, char2;
 	int int1, int2;
 	int count;
+	int gameLength;
 public:
-	Data();
-	~Data() {};
+	Data(int);
+	~Data();
 	void applyMove(char,int,char,int);								//plays thru the game and refreshes gamescreen
 	string getCurrentPlayer() { return playerList[whoseTurn]->getName(); }
 	int getCurrentPlayerAI() { return playerList[whoseTurn]->getAI(); }
+	int getWhoseTurn() { return whoseTurn; }
 	void nextTurn() { whoseTurn++; if (whoseTurn == amtPlayers) whoseTurn = 0; }		//next Player's Turn
 	bool checkEndGame();						//returns true if all squares have been captured
 	bool endGame();								//endGame done here including displaying results and setting up next game
 	void refreshGS();							//used in refresh() as the game screen refresher
 	void populateList();						//populates list of lines left to be captured
 	void initializePlayer(string, int);
-	vector<Line*> getFreeLines() { return freeLineList; }
-	vector<Square*> getFreeSquares() { return freeSquareList; }
+	vector<Line*> getFreeLines();
+	vector<Square*> getFreeSquares();
+	void undoMove(Line *);
+	int eval(int, int);
 
 };

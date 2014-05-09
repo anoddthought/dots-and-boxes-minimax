@@ -1,5 +1,6 @@
 #include "Square.h"
 #include "Line.h"
+#include <vector>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -21,7 +22,7 @@ bool Square::capture(string s, int sqrNum, Line horLine[7][8], Line verLine[8][7
 			//set square attributes
 			owner = s;
 			on = true;
-			cout << "\nYou captured a square! You may go again!\n";
+			//cout << "\nYou captured a square! You may go again!\n";
 			return true;
 		}
 		else
@@ -73,4 +74,14 @@ Line* Square::lineNotCaught()
 	if (!top->getOn())
 		return top;
 	return bottom;
+}
+
+bool Square::lineIsInSquare(Line *tmp)
+{
+	//if the line is one of the lines of this square
+	if ((tmp == left) || (tmp == right) || (tmp == top) || (tmp == bottom))
+	{
+		return true;
+	}
+	else return false;
 }

@@ -74,12 +74,14 @@
     <ClCompile Include="Data.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Minimax.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Square.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Data.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="Minimax.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Square.h" />
   </ItemGroup>

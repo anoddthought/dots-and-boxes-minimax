@@ -19,5 +19,6 @@ public:
 	void setLines(Line*, Line*, Line*, Line*);
 	int linesLeftToCapture();
 	Line* lineNotCaught();
+	bool lineIsInSquare(Line*);
 };
 
