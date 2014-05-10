@@ -36,5 +36,5 @@ public:
 	vector<Square*> getFreeSquares();
 	void undoMove(Line *);
 	int eval(int, int);
-
+	void incrementGameScore();
 };

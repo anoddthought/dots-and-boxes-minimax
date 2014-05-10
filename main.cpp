@@ -159,7 +159,7 @@ void main()
 			case 3: //Minimax
 				//get time and add to array
 				clock_t start = clock();
-				Line* bestMove = ai.mini_max(&game, 1);
+				Line* bestMove = ai.mini_max(&game, 6);
 				minimaxtimetaken.push_back(clock() - start);
 				c1 = bestMove->getChar1();
 				i1 = bestMove->getInt1();

@@ -3,6 +3,10 @@
 #include <vector>
 using namespace std;
 
+struct minimaxmove{
+	Line* move;
+	int value;
+};
 class Minimax
 {
 	int maxPlayer, minPlayer;
@@ -10,7 +14,7 @@ public:
 	Minimax();
 	~Minimax();
 	Line* mini_max(Data*,int);
-	int max(Data*,int,int,int);
-	int min(Data*,int,int,int);
+	minimaxmove max(Data*,int,int,int,bool);
+	minimaxmove min(Data*,int,int,int);
 };
 

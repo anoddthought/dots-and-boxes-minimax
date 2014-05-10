@@ -48,15 +48,6 @@ void Data::initializePlayer(string n, int x)
 //checks if user would like to play again
 bool Data::endGame()
 {
-	//increment total game score for person with highest score
-	if (playerList[0]->getGameScore() > playerList[1]->getGameScore())
-	{
-		playerList[0]->incrementTotalScore();
-	}
-	else
-		playerList[1]->incrementTotalScore();
-
-	
 	if (count == gameLength)
 	{
 		return false;
@@ -91,6 +82,8 @@ bool Data::endGame()
 //refresh the Game Screen with the gameboard and scoreboard
 void Data::refreshGS()
 {
+	if (checkEndGame())
+		incrementGameScore();
 	//display whose Turn it is
 	cout << playerList[whoseTurn]->getName() << ", it is your turn." << endl;
 
@@ -480,4 +473,15 @@ vector<Square*> Data::getFreeSquares()
 		freeSquareList.push_back(&arrySqr[x]);
 	}
 	return freeSquareList;
+}
+
+void Data::incrementGameScore()
+{
+	//increment total game score for person with highest score
+	if (playerList[0]->getGameScore() > playerList[1]->getGameScore())
+	{
+		playerList[0]->incrementTotalScore();
+	}
+	else
+		playerList[1]->incrementTotalScore();
 }
