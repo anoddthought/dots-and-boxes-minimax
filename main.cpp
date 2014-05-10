@@ -163,7 +163,7 @@ void main()
 				if (maxPlyr == 0)
 					minPlyr = 1;
 				else minPlyr = 0;
-				int depth = 6;
+				int depth = 3;
 				int nextdepth;
 				int alpha = -9999;
 				int beta = 9999;
@@ -265,9 +265,9 @@ int alphabeta(Data* node, int depth, int alpha, int beta, int maxPlayer, int min
 				alpha = tmp;
 			}
 			node->undoMove((*iter));
-			if (beta <= tmp)
+			//if (beta <= tmp)
 			{
-				return tmp;
+				//return tmp;
 			}
 		}
 		return alpha;
@@ -287,9 +287,9 @@ int alphabeta(Data* node, int depth, int alpha, int beta, int maxPlayer, int min
 				beta = tmp;
 			}
 			node->undoMove((*iter));
-			if (tmp <= alpha)
+			//if (tmp <= alpha)
 			{
-				return tmp;
+				//return tmp;
 			}
 		}
 		return beta;
