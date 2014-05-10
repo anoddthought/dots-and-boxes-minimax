@@ -6,14 +6,13 @@
 #include <string>
 #include <time.h>
 #include "data.h"
-#include "Minimax.h"
 
 //included for resizing of windows
 #define _WIN32_WINNT 0x0500
 #include <Windows.h>
 
 using namespace std;
-
+int alphabeta(Data*, int, int, int, int, int, int);
 void main()
 {
 	list<clock_t> minimaxtimetaken;
@@ -29,10 +28,7 @@ void main()
 	GetWindowRect(console, &r); //stores the console's current dimensions
 
 	//MoveWindow(window_handle, x, y, width, height, redraw_window);
-	MoveWindow(console, r.left, r.top, 580, 430, TRUE);
-	
-	//create Minimax class
-	Minimax ai;
+	MoveWindow(console, r.left, r.top, 580, 460, TRUE);
 
 	//determine how many games to play
 	cout << "How many games: ";
@@ -159,7 +155,45 @@ void main()
 			case 3: //Minimax
 				//get time and add to array
 				clock_t start = clock();
-				Line* bestMove = ai.mini_max(&game, 1);
+				//alphabeta search done here
+				vector<Line*> moves = game.getFreeLines();
+				vector<Line*> bestMoves;
+				int minPlyr;
+				int maxPlyr = game.getWhoseTurn();
+				if (maxPlyr == 0)
+					minPlyr = 1;
+				else minPlyr = 0;
+				int depth = 6;
+				int nextdepth;
+				int alpha = -9999;
+				int beta = 9999;
+				for (vector<Line*>::iterator iter = moves.begin(); iter != moves.end(); ++iter)
+				{
+					game.applyMove((*iter)->getChar1(), (*iter)->getInt1(), (*iter)->getChar2(), (*iter)->getInt2());
+					/*if (game.getWhoseTurn() != maxPlyr)
+					{
+						//min player's turn, decrement depth
+						nextdepth = depth - 1;
+
+					}
+					else nextdepth = depth;*/
+					int tmp = alphabeta(&game, depth-1, alpha, beta, maxPlyr, minPlyr, game.getWhoseTurn());
+					if (tmp > alpha)
+					{
+						bestMoves.clear();
+						bestMoves.push_back((*iter));
+						alpha = tmp;
+					}
+					else if (tmp == alpha)
+					{
+						bestMoves.push_back((*iter));
+					}
+					game.undoMove((*iter));
+				}
+				//pick random move out of bestmoves
+				int random = rand() % bestMoves.size();
+				Line* bestMove = bestMoves[random];
+				//end alphabeta search
 				minimaxtimetaken.push_back(clock() - start);
 				c1 = bestMove->getChar1();
 				i1 = bestMove->getInt1();
@@ -169,6 +203,7 @@ void main()
 			}
 			//END OF Switch
 
+			cout << game.getCurrentPlayer() << "'s Move: " << c1 << i1 << c2 << i2 << endl;
 			game.applyMove(c1, i1, c2, i2);
 			//repeat until checkEndGame
 			game.refreshGS();
@@ -202,4 +237,61 @@ void main()
 	}
 
 	system("PAUSE");
+}
+
+int alphabeta(Data* node, int depth, int alpha, int beta, int maxPlayer, int minPlayer, int previousTurn)
+{
+	int nextdepth = depth;
+	if (depth == 0 || node->checkEndGame())
+	{
+		int result = node->eval(maxPlayer, minPlayer);
+		return result;
+	}
+	vector<Line*> moves = node->getFreeLines();
+	if (node->getWhoseTurn() == maxPlayer)
+	{
+		for (vector<Line*>::iterator iter = moves.begin(); iter != moves.end(); ++iter)
+		{
+			node->applyMove((*iter)->getChar1(), (*iter)->getInt1(), (*iter)->getChar2(), (*iter)->getInt2());
+			/*if (previousTurn == minPlayer)
+			{
+				//last turn was maxPlayer, this turn is minPlayer, decrement depth
+				nextdepth = depth - 1;
+
+			}*/
+			int tmp = alphabeta(node, depth-1, alpha, beta, maxPlayer, minPlayer, maxPlayer);
+			if (tmp > alpha)
+			{
+				alpha = tmp;
+			}
+			node->undoMove((*iter));
+			if (beta <= tmp)
+			{
+				return tmp;
+			}
+		}
+		return alpha;
+	}
+	else //min's turn
+	{
+		for (vector<Line*>::iterator iter = moves.begin(); iter != moves.end(); ++iter)
+		{
+			node->applyMove((*iter)->getChar1(), (*iter)->getInt1(), (*iter)->getChar2(), (*iter)->getInt2());
+			/*if (previousTurn == maxPlayer)
+			{
+				nextdepth = depth - 1;
+			}*/
+			int tmp = alphabeta(node, depth-1, alpha, beta, maxPlayer, minPlayer, minPlayer);
+			if (tmp < beta)
+			{
+				beta = tmp;
+			}
+			node->undoMove((*iter));
+			if (tmp <= alpha)
+			{
+				return tmp;
+			}
+		}
+		return beta;
+	}
 }
