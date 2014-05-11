@@ -327,8 +327,6 @@ void Data::populateList()
 			hLine[x][y].setY(y);
 			hLine[x][y].setType(0);
 			hLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&hLine[x][y]);
 		}
 	}
 	//add vertical lines
@@ -341,8 +339,6 @@ void Data::populateList()
 			vLine[x][y].setY(y);
 			vLine[x][y].setType(1);
 			vLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&vLine[x][y]);
 		}
 	}
 	//populate square list with all squares
@@ -355,7 +351,6 @@ void Data::populateList()
 		Line *right = &vLine[(x % 7) + 1][x / 7];
 		arrySqr[x].setLines(left, right, top, bottom);
 		arrySqr[x].setPosition(x);
-		freeSquareList.push_back(&arrySqr[x]);
 	}
 
 }
@@ -441,3 +436,50 @@ vector<Line*> Data::getBestChain()
 	return bestChain;
 }
 
+vector<Line*> Data::getFreeLines()
+{
+	vector<Line*> freeLineList;
+	//add horizontal lines
+	for (int x = 0; x < 7; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			if (!hLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&hLine[x][y]);
+		}
+	}
+	//add vertical lines
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 7; y++)
+		{
+			if (!vLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&vLine[x][y]);
+		}
+	}
+	return freeLineList;
+}
+
+vector<Square*> Data::getFreeSquares()
+{
+	vector<Square*> freeSquareList;
+	//populate square list with all squares
+	//initialize square object with pointers to lines that make it up
+	for (int x = 0; x < 49; x++)
+	{
+		Line *top = &hLine[x % 7][x / 7];
+		Line *bottom = &hLine[x % 7][x / 7 + 1];
+		Line *left = &vLine[x % 7][x / 7];
+		Line *right = &vLine[(x % 7) + 1][x / 7];
+		arrySqr[x].setLines(left, right, top, bottom);
+		freeSquareList.push_back(&arrySqr[x]);
+	}
+	return freeSquareList;
+}
+
+vector<Line*> Data::getSecondLines()
+{
+
+}

@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include "Line.h"
+#include <vector>
 using namespace std;
 
 class Square
 {
 	bool on;
 	string owner;
+	int position;
 	Line *left, *right, *top, *bottom;			//pointers to the lines that make up the square
 public:
 	Square() { on = false, owner = "  "; }		//no-arg constructor, sets all to default values off and ""
@@ -18,6 +20,9 @@ public:
 	string getOwner() { return owner; }			//return string owner
 	void setLines(Line*, Line*, Line*, Line*);
 	int linesLeftToCapture();
-	Line* lineNotCaught();
+	vector<Line*> lineNotCaught();
+	bool containsLine(Line*);
+	int getPosition() { return position; }
+	void setPosition(int x) { position = x; }
 };
 

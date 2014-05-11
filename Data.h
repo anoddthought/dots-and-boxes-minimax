@@ -36,7 +36,8 @@ public:
 		char1 = toupper(c1); int1 = i1; char2 = toupper(c2); int2 = i2; 
 	}
 	void initializePlayer(string, int);
-	vector<Line*> getFreeLines() { return freeLineList; }
-	vector<Square*> getFreeSquares() { return freeSquareList; }
+	vector<Line*> getFreeLines();
+	vector<Square*> getFreeSquares();
 	vector<Line*> getBestChain();
+	vector<Line*> getSecondLines();
 };
