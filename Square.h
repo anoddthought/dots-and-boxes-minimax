@@ -2,6 +2,7 @@
 #include <string>
 #include "Line.h"
 #include <vector>
+#include <iostream>
 using namespace std;
 
 class Square
@@ -20,7 +21,7 @@ public:
 	string getOwner() { return owner; }			//return string owner
 	void setLines(Line*, Line*, Line*, Line*);
 	int linesLeftToCapture();
-	vector<Line*> linesNotCaught();
+	vector<Line * > linesNotCaught();
 	bool containsLine(Line*);
 	int getPosition() { return position; }
 	void setPosition(int x) { position = x; }

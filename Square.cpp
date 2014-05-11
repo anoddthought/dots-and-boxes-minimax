@@ -1,9 +1,4 @@
 #include "Square.h"
-#include "Line.h"
-#include <string>
-#include <iostream>
-using namespace std;
-
 
 Square::~Square()
 {
