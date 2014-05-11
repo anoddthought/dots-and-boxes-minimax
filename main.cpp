@@ -77,6 +77,7 @@ void main()
 		break;
 	}
 	game.refreshGS();
+	vector<Line*> bestChain;
 	//play the game
 	do{
 		do
@@ -130,11 +131,27 @@ void main()
 			}
 			break;
 			case 3: //double-dealing
-				//need function to check for chains
-				//grab largest chain and iterate through it
-				//if currentChain is NULL, grab new chain else random line
-				//with 3 lines left to capture in chain
-				//grab last line, leaving middle 2 lines for capture
+				//get bestChain
+				if (bestChain.empty())
+				{
+					//get a new bestChain
+					bestChain = game.getBestChain();
+				}
+				if (bestChain.empty())
+				{
+					//if no bestChain, add move to bestChain that will not complete a square
+					bestChain = game.getSecondLines();
+				}
+				if (bestChain.empty())
+				{
+					//if still empty, do random move
+					bestChain.push_back(movesLeft[random]);
+				}
+				c1 = bestChain[0]->getChar1();
+				i1 = bestChain[0]->getInt1();
+				c2 = bestChain[0]->getChar2();
+				i2 = bestChain[0]->getInt2();
+				bestChain.erase(bestChain.begin()+1);
 				break;
 			}
 			//END OF Switch

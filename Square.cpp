@@ -64,13 +64,29 @@ int Square::linesLeftToCapture()
 	return count;
 }
 
-Line* Square::lineNotCaught()
+vector<Line*> Square::lineNotCaught()
 {
+	vector<Line*> tmp;
 	if (!left->getOn())
-		return left;
+		tmp.push_back(left);
 	if (!right->getOn())
-		return right;
+		tmp.push_back(right);
 	if (!top->getOn())
-		return top;
-	return bottom;
+		tmp.push_back(top);
+	if (!bottom->getOn())
+		tmp.push_back(bottom);
+	return tmp;
+}
+
+bool Square::containsLine(Line *tmp)
+{
+	if (tmp == left)
+		return true;
+	if (tmp == right)
+		return true;
+	if (tmp == top)
+		return true;
+	if (tmp == bottom)
+		return true;
+	return false;
 }

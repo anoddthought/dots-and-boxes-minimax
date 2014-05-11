@@ -38,4 +38,5 @@ public:
 	void initializePlayer(string, int);
 	vector<Line*> getFreeLines() { return freeLineList; }
 	vector<Square*> getFreeSquares() { return freeSquareList; }
+	vector<Line*> getBestChain();
 };
