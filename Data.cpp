@@ -375,7 +375,7 @@ vector<Line*> Data::getBestChain()
 			vector<Line*>::iterator currentLine = nextChain.begin();
 			while (currentLine != nextChain.end())
 			{
-				nextChain.push_back((*iter)->lineNotCaught()[0]);
+				nextChain.push_back((*iter)->linesNotCaught()[0]);
 				//check the squares that are next to this square
 				int squares[4];
 				if ((x % 7) != 0)
@@ -413,7 +413,7 @@ vector<Line*> Data::getBestChain()
 							if (arrySqr[squares[x]].linesLeftToCapture() == 2)
 							{
 								//get next line to check in the loop
-								vector<Line*> linesLeft = arrySqr[squares[x]].lineNotCaught();
+								vector<Line*> linesLeft = arrySqr[squares[x]].linesNotCaught();
 								if (linesLeft[0] != (*currentLine))
 									nextChain.push_back(linesLeft[0]);
 								else if (linesLeft[1] != (*currentLine))
@@ -481,5 +481,16 @@ vector<Square*> Data::getFreeSquares()
 
 vector<Line*> Data::getSecondLines()
 {
+	vector<Square*> freeSquares = getFreeSquares();
+	vector<Line*> bestsecondLines;
+	for (vector<Square*>::iterator iter = freeSquares.begin(); iter != freeSquares.end(); ++iter)
+	{
+		if ((*iter)->linesLeftToCapture > 2)
+		{
+			//get the lines that can be caught in this square
+			vector<Line*> tmp = (*iter)->linesNotCaught();
 
+			//iterate through lines and 
+		}
+	}
 }

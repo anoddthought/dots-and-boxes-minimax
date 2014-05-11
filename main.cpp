@@ -119,7 +119,7 @@ void main()
 					//if only one line left to capture, capture it
 					if ((*iter)->linesLeftToCapture() == 1)
 					{
-						tmp = (*iter)->lineNotCaught();
+						tmp = (*iter)->linesNotCaught();
 						break;
 					}
 				}

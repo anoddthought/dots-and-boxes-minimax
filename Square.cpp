@@ -64,7 +64,7 @@ int Square::linesLeftToCapture()
 	return count;
 }
 
-vector<Line*> Square::lineNotCaught()
+vector<Line*> Square::linesNotCaught()
 {
 	vector<Line*> tmp;
 	if (!left->getOn())

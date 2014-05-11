@@ -20,7 +20,7 @@ public:
 	string getOwner() { return owner; }			//return string owner
 	void setLines(Line*, Line*, Line*, Line*);
 	int linesLeftToCapture();
-	vector<Line*> lineNotCaught();
+	vector<Line*> linesNotCaught();
 	bool containsLine(Line*);
 	int getPosition() { return position; }
 	void setPosition(int x) { position = x; }
