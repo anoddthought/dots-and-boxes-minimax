@@ -64,15 +64,15 @@ bool Data::endGame()
 		whoseTurn = 0;
 
 		//reset all square
-		for (int x = 0; x < 49; x++)
+		for (int x = 0; x < XGRID*YGRID; x++)
 			arrySqr[x].reset();
 		//reset all line objects
-		for (int y = 0; y < 8; y++)
+		for (int y = 0; y < 5; y++)
 		{
-			for (int x = 0; x < 7; x++)
+			for (int x = 0; x < 4; x++)
 			{
-				hLine[x][y].reset();	//hLine[7][8]
-				vLine[y][x].reset();	//x and y switched for vLine[8][7]
+				hLine[x][y].reset();	//hLine[4][5]
+				vLine[y][x].reset();	//x and y switched for vLine[5][4]
 			}
 		}
 		return true;		//returns false for do not end the game
@@ -90,15 +90,15 @@ void Data::refreshGS()
 	int sqrCount = 0;		//count for Square array
 	char leftcol = 'A';		//used to output current row A-H
 
-	cout << "   1    2    3    4    5    6    7    8" << endl;
+	cout << "   1    2    3    4    5" << endl;
 	//prints dots 2-8 and any horizontal lines in this row
-	for (int y = 0; y < 7; y++)
+	for (int y = 0; y < 4; y++)
 	{
 		cout << leftcol << "  o";	//display column identifier with first dot
 		leftcol += 1;				//increment column identifier
 
 		//displays one row with horizontal lines
-		for (int x = 0; x < 7; x++)
+		for (int x = 0; x < 4; x++)
 		{
 			hLine[x][y].hdisplay();
 			cout << 'o';
@@ -107,26 +107,26 @@ void Data::refreshGS()
 		//displays all rows with vertical lines
 		//display top row with possibly ownership
 		cout << "   ";
-		for (int x = 0; x < 7; x++)
+		for (int x = 0; x < 4; x++)
 		{
 			vLine[x][y].vdisplay();
 			arrySqr[sqrCount].display();
 			sqrCount++;
 		}
 		//displays last vertical lines
-		vLine[7][y].vdisplay();
+		vLine[4][y].vdisplay();
 		//next row
 		cout << endl;
 
 		//print row 2 without owner display
 		cout << "   ";
-		for (int x = 0; x < 7; x++)
+		for (int x = 0; x < 4; x++)
 		{
 			vLine[x][y].vdisplay();
 			cout << "    ";
 		}
 		//displays last vertical lines
-		vLine[7][y].vdisplay();
+		vLine[4][y].vdisplay();
 		//next row
 		cout << endl;
 
@@ -134,9 +134,9 @@ void Data::refreshGS()
 	//print row I of grid
 	cout << leftcol << "  o";	//display column identifier with first dot
 	//displays one row with horizontal lines
-	for (int x = 0; x < 7; x++)
+	for (int x = 0; x < 4; x++)
 	{
-		hLine[x][7].hdisplay();
+		hLine[x][4].hdisplay();
 		cout << 'o';
 	}
 	cout << endl << endl << endl;
@@ -181,14 +181,14 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 					//capture horizontal line
 					hLine[x][y].capture(playerList[whoseTurn]->getName());
 					//figure out square Numbers associated with line captured
-					int bottomSqr = y * 7 + x;
-					int topSqr = bottomSqr - 7;
+					int bottomSqr = y * 4 + x;
+					int topSqr = bottomSqr - 4;
 					bool test1 = false, test2 = false;
 					//test top and bottom square to see if player completed the square
 					//don't test1 if we are on the top row of hLine
 					if (y != 0)
 						test1 = arrySqr[topSqr].capture(playerList[whoseTurn]->getName(), topSqr, hLine, vLine);
-					if (y != 7)
+					if (y != 4)
 						test2 = arrySqr[bottomSqr].capture(playerList[whoseTurn]->getName(), bottomSqr, hLine, vLine);
 					if (test1 || test2)
 					{
@@ -234,11 +234,11 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 					//capture vertical line
 					vLine[x][y].capture(playerList[whoseTurn]->getName());
 					//determine square number to left and right of vertical line	
-					int rightSqr = y * 7 + x;
+					int rightSqr = y * 4 + x;
 					int leftSqr = rightSqr - 1;
 					bool test1 = false, test2 = false;
 					//test top and bottom square to see if player completed the square
-					if (x != 7)	// do not test for right square if vLine is most right line
+					if (x != 4)	// do not test for right square if vLine is most right line
 						test1 = arrySqr[rightSqr].capture(playerList[whoseTurn]->getName(), rightSqr, hLine, vLine);
 					if (x != 0) // do not test for left square if vLine is most left line
 						test2 = arrySqr[leftSqr].capture(playerList[whoseTurn]->getName(), leftSqr, hLine, vLine);
@@ -275,7 +275,7 @@ void Data::applyMove(char char1, int int1, char char2, int int2)
 //Checks to see if all squares are on and returns true
 bool Data::checkEndGame()
 {
-	for (int x = 0; x < 49; x++)
+	for (int x = 0; x < XGRID*YGRID; x++)
 	{
 		//check to see if Square is on
 		if (!arrySqr[x].getOn())
@@ -291,9 +291,9 @@ bool Data::checkEndGame()
 void Data::populateList()
 {
 	//add horizontal lines
-	for (int x = 0; x < 7; x++)
+	for (int x = 0; x < 4; x++)
 	{
-		for (int y = 0; y < 8; y++)
+		for (int y = 0; y < 5; y++)
 		{
 			//initialize attributes 
 			hLine[x][y].setX(x);
@@ -303,9 +303,9 @@ void Data::populateList()
 		}
 	}
 	//add vertical lines
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < 5; x++)
 	{
-		for (int y = 0; y < 7; y++)
+		for (int y = 0; y < 4; y++)
 		{
 			//initialize attributes
 			vLine[x][y].setX(x);
@@ -316,12 +316,12 @@ void Data::populateList()
 	}
 	//populate square list with all squares
 	//initialize square object with pointers to lines that make it up
-	for (int x = 0; x < 49; x++)
+	for (int x = 0; x < XGRID*YGRID; x++)
 	{
-		Line *top = &hLine[x % 7][x / 7];
-		Line *bottom = &hLine[x % 7][x / 7 + 1];
-		Line *left = &vLine[x % 7][x / 7];
-		Line *right = &vLine[(x % 7) + 1][x / 7];
+		Line *top = &hLine[x % 4][x / 4];
+		Line *bottom = &hLine[x % 4][x / 4 + 1];
+		Line *left = &vLine[x % 4][x / 4];
+		Line *right = &vLine[(x % 4) + 1][x / 4];
 		arrySqr[x].setLines(left, right, top, bottom);;
 	}
 
@@ -336,7 +336,7 @@ void Data::undoMove(Line* lastMove)
 	lastMove->reset();
 
 	//iterate through the square array
-	for (int x = 0; x < 49; x++)
+	for (int x = 0; x < XGRID*YGRID; x++)
 	{
 		//if line is in the square
 		if (arrySqr[x].lineIsInSquare(lastMove))
@@ -356,8 +356,7 @@ void Data::undoMove(Line* lastMove)
 	//check boolean to see if we should decrement the score
 	if (decrementWhoseTurn)
 	{
-		if (whoseTurn == 0) whoseTurn = 1;
-		else whoseTurn = 0;
+		nextTurn();
 	}
 }
 
@@ -436,9 +435,9 @@ vector<Line*> Data::getFreeLines()
 {
 	vector<Line*> freeLineList;
 	//add horizontal lines
-	for (int x = 0; x < 7; x++)
+	for (int x = 0; x < 4; x++)
 	{
-		for (int y = 0; y < 8; y++)
+		for (int y = 0; y < 5; y++)
 		{
 			if (!hLine[x][y].getOn())
 				//add Line item to free list
@@ -446,9 +445,9 @@ vector<Line*> Data::getFreeLines()
 		}
 	}
 	//add vertical lines
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < 5; x++)
 	{
-		for (int y = 0; y < 7; y++)
+		for (int y = 0; y < 4; y++)
 		{
 			if (!vLine[x][y].getOn())
 				//add Line item to free list
@@ -463,12 +462,12 @@ vector<Square*> Data::getFreeSquares()
 	vector<Square*> freeSquareList;
 	//populate square list with all squares
 	//initialize square object with pointers to lines that make it up
-	for (int x = 0; x < 49; x++)
+	for (int x = 0; x < XGRID*YGRID; x++)
 	{
-		Line *top = &hLine[x % 7][x / 7];
-		Line *bottom = &hLine[x % 7][x / 7 + 1];
-		Line *left = &vLine[x % 7][x / 7];
-		Line *right = &vLine[(x % 7) + 1][x / 7];
+		Line *top = &hLine[x % 4][x / 4];
+		Line *bottom = &hLine[x % 4][x / 4 + 1];
+		Line *left = &vLine[x % 4][x / 4];
+		Line *right = &vLine[(x % 4) + 1][x / 4];
 		arrySqr[x].setLines(left, right, top, bottom);
 		freeSquareList.push_back(&arrySqr[x]);
 	}

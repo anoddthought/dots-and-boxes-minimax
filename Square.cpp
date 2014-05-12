@@ -11,10 +11,10 @@ Square::~Square()
 }
 
 ////Square Member Functions////
-bool Square::capture(string s, int sqrNum, Line horLine[7][8], Line verLine[8][7])
+bool Square::capture(string s, int sqrNum, Line horLine[XGRID][YGRID+1], Line verLine[XGRID+1][YGRID])
 {
-	//square less than 49(amount of squares)
-	if (sqrNum >= 0 && sqrNum < 50)
+	//square less than XGRID*YGRID(amount of squares)
+	if (sqrNum >= 0 && sqrNum < XGRID*YGRID)
 	{
 		//if all lines of the square are captured then the square becomes captured
 		if ((top->getOn() && bottom->getOn() && left->getOn() && right->getOn()) && on != true)

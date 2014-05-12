@@ -6,13 +6,16 @@
 #include <vector>
 #include <list>
 using namespace std;
+//same values must be in Square
+#define XGRID 4
+#define YGRID 4
 
 class Data : Line, Square
 {
 	int amtPlayers;				//total amount of players
-	Line hLine[7][8];			//used for horizontal line storage
-	Line vLine[8][7];			//used for vertical line storage
-	Square arrySqr[49];			//array of squares
+	Line hLine[XGRID][YGRID+1];			//used for horizontal line storage
+	Line vLine[XGRID+1][YGRID];			//used for vertical line storage
+	Square arrySqr[XGRID*YGRID];			//array of squares
 	vector<Player*> playerList;	//list of players
 	int whoseTurn;				//indicates whose turn in playerList it is
 	char char1, char2;

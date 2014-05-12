@@ -14,7 +14,7 @@ public:
 	Minimax();
 	~Minimax();
 	Line* mini_max(Data*,int);
-	minimaxmove max(Data*,int,int,int,bool);
-	minimaxmove min(Data*,int,int,int);
+	minimaxmove max(Data*,int,bool);
+	minimaxmove min(Data*,int);
 };
 

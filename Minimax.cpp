@@ -18,11 +18,11 @@ Line* Minimax::mini_max(Data *game, int cutoff)
 	int alpha = -9999;
 	int beta = 9999;
 
-	minimaxmove bestMove = max(game, cutoff, alpha, beta, true);
+	minimaxmove bestMove = max(game, cutoff, true);
 	return bestMove.move;
 }
 
-minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, bool toplevel)
+minimaxmove Minimax::max(Data *game, int cutoffForTurns, bool toplevel)
 {
 	vector<Line*> bestMoves;
 	//get remaining moves
@@ -36,7 +36,7 @@ minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, boo
 		nextMove.value = game->eval(maxPlayer, minPlayer);
 		return nextMove;
 	}
-
+	int alpha = -9999;
 	//iterate through each move and get the best_move or max move
 	for (vector<Line*>::iterator iter = moves.begin(); iter != moves.end(); ++iter)
 	{
@@ -44,9 +44,9 @@ minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, boo
 		game->applyMove((*iter)->getChar1(), (*iter)->getInt1(), (*iter)->getChar2(), (*iter)->getInt2());
 		//check to see if it is still maxPlayer's turn
 		if (game->getWhoseTurn() == maxPlayer)
-			nextMove = max(game, cutoffForTurns-1, alpha, beta, false);
+			nextMove = max(game, cutoffForTurns, false);
 		else //mins turn
-			nextMove = min(game, (cutoffForTurns-1), alpha, beta);
+			nextMove = min(game, (cutoffForTurns-1) );
 		//check to see which move is better, nextMove or bestMove
 		//check for alpha move
 		if (nextMove.value > alpha)
@@ -67,7 +67,7 @@ minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, boo
 		//done with this move, undo it so we can check the next one
 		game->undoMove((*iter));
 		//alpha beta pruning done here
-		if (beta <= alpha)
+		/*if (beta <= alpha)
 		{
 			moves.clear();
 			//iterate through bestMoves and choose one
@@ -82,7 +82,7 @@ minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, boo
 
 			nextMove.value = alpha;
 			return nextMove;
-		}
+		}*/
 	}
 	moves.clear();
 	//now the best moves are stored in bestMoves
@@ -97,8 +97,9 @@ minimaxmove Minimax::max(Data *game, int cutoffForTurns,int alpha, int beta, boo
 	return nextMove;
 }
 
-minimaxmove Minimax::min(Data *game, int cutoffForTurns, int alpha, int beta)
+minimaxmove Minimax::min(Data *game, int cutoffForTurns)
 {
+	int beta = 9999;
 	//get remaining moves
 	vector<Line*> moves = game->getFreeLines();
 	minimaxmove nextMove;
@@ -117,9 +118,9 @@ minimaxmove Minimax::min(Data *game, int cutoffForTurns, int alpha, int beta)
 		game->applyMove((*iter)->getChar1(), (*iter)->getInt1(), (*iter)->getChar2(), (*iter)->getInt2());
 		//check to see if it is still minPlayer's turn
 		if (game->getWhoseTurn() == minPlayer)
-			nextMove = min(game, cutoffForTurns-1, alpha, beta);
+			nextMove = min(game, cutoffForTurns);
 		else //mins turn
-			nextMove = max(game, cutoffForTurns-1, alpha, beta, false);
+			nextMove = max(game, (cutoffForTurns-1), false);
 		//check to see which move is better, nextMove or bestMove
 		if (nextMove.value < beta)
 		{
@@ -128,12 +129,12 @@ minimaxmove Minimax::min(Data *game, int cutoffForTurns, int alpha, int beta)
 		//done with this move, undo it so we can check the next one
 		game->undoMove((*iter));
 		//alpha beta pruning done here
-		if (beta <= alpha)
+		/*if (beta <= alpha)
 		{
 			moves.clear();
 			nextMove.value = beta;
 			return nextMove;
-		}
+		}*/
 	}
 	moves.clear();
 	nextMove.value = beta;
