@@ -15,8 +15,6 @@ class Data : Line, Square
 	Square arrySqr[49];			//array of squares
 	vector<Player*> playerList;	//list of players
 	int whoseTurn;				//indicates whose turn in playerList it is
-	vector<Line*> freeLineList;		//list of Lines that have not been captured
-	vector<Square*> freeSquareList;
 	char char1, char2;
 	int int1, int2;
 	int count;
@@ -36,6 +34,8 @@ public:
 		char1 = toupper(c1); int1 = i1; char2 = toupper(c2); int2 = i2; 
 	}
 	void initializePlayer(string, int);
-	vector<Line*> getFreeLines() { return freeLineList; }
-	vector<Square*> getFreeSquares() { return freeSquareList; }
+	vector<Line*> getFreeLines();
+	vector<Square*> getFreeSquares();
+	vector<Line*> getBestChain();
+	vector<Line*> getSecondLines();
 };

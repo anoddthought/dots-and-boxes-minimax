@@ -10,6 +10,7 @@ class Line
 	char char1, char2;
 	int int1, int2;
 	int type;								//0 = horizontal, 1 = vertical
+	int firstSquare, secondSquare;
 public:
 	Line() { on = false, owner = ""; }		//constructor no parameters
 	~Line();
@@ -28,6 +29,10 @@ public:
 	int getInt1() { return int1; }
 	int getInt2() { return int2; }
 	void setType(int x) { type = x; }
+	void setSquare1(int tmp) { firstSquare = tmp; }
+	void setSquare2(int tmp) { secondSquare = tmp; }
+	int getSquare1() { return firstSquare; }
+	int getSquare2() { return secondSquare; }
 	//copy constructor
 	Line(const Line& p)
 	{//copy all variables to this object

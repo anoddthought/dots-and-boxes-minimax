@@ -195,9 +195,6 @@ void Data::refresh()
 				{
 					//capture horizontal line
 					hLine[x][y].capture(playerList[whoseTurn]->getName());
-					//delete line from freeLineList
-					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &hLine[x][y]);
-					freeLineList.erase(it);
 					//figure out square Numbers associated with line captured
 					int bottomSqr = y * 7 + x;
 					int topSqr = bottomSqr - 7;
@@ -215,16 +212,10 @@ void Data::refresh()
 						if (test1)
 						{
 							playerList[whoseTurn]->incrementGameScore();
-							//top square captured, delete it from free square list
-							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[topSqr]);
-							freeSquareList.erase(it);
 						}
 						if (test2)
 						{
 							playerList[whoseTurn]->incrementGameScore();
-							//bottom square captured, delete from free square list
-							vector<Square*>::iterator it = find(freeSquareList.begin(), freeSquareList.end(), &arrySqr[bottomSqr]);
-							freeSquareList.erase(it);
 						}
 					}
 					else
@@ -255,9 +246,6 @@ void Data::refresh()
 				{
 					//capture vertical line
 					vLine[x][y].capture(playerList[whoseTurn]->getName());
-					//delete line from freeLineList
-					vector<Line*>::iterator it = find(freeLineList.begin(), freeLineList.end(), &vLine[x][y]);
-					freeLineList.erase(it);
 					//determine square number to left and right of vertical line	
 					int rightSqr = y * 7 + x;
 					int leftSqr = rightSqr - 1;
@@ -327,8 +315,6 @@ void Data::populateList()
 			hLine[x][y].setY(y);
 			hLine[x][y].setType(0);
 			hLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&hLine[x][y]);
 		}
 	}
 	//add vertical lines
@@ -341,8 +327,6 @@ void Data::populateList()
 			vLine[x][y].setY(y);
 			vLine[x][y].setType(1);
 			vLine[x][y].setInput();
-			//add Line item to free list
-			freeLineList.push_back(&vLine[x][y]);
 		}
 	}
 	//populate square list with all squares
@@ -354,71 +338,159 @@ void Data::populateList()
 		Line *left = &vLine[x % 7][x / 7];
 		Line *right = &vLine[(x % 7) + 1][x / 7];
 		arrySqr[x].setLines(left, right, top, bottom);
+		arrySqr[x].setPosition(x);
+	}
+
+}
+
+vector<Line*> Data::getBestChain()
+{
+	//stores the best chain to get
+	//holds lines in order from first to last
+	vector<Line*> bestChain;
+	vector<Line*> nextChain;
+
+	vector<Square*> freeSquares = getFreeSquares();
+	//iterate through all free squares
+	//check lines that connect the square to the other squares
+	for (vector<Square*>::iterator iter = freeSquares.begin(); iter != freeSquares.end(); ++iter)
+	{
+		nextChain.clear();
+		int x = (*iter)->getPosition();
+		//if square can be captured, get all lines that are part of its chain
+		if ((*iter)->linesLeftToCapture() == 1)
+		{
+			vector<Line*>::iterator currentLine = nextChain.begin();
+			while (currentLine != nextChain.end())
+			{
+				nextChain.push_back((*iter)->linesNotCaught()[0]);
+				//check the squares that are next to this square
+				int squares[4];
+				if ((x % 7) != 0)
+				{
+					//left Square is valid
+					squares[0] = x - 1;
+				}
+				if ((x % 7) != 1)
+				{
+					//right square is valid
+					squares[1] = x + 1;
+				}
+				if (x < 42)
+				{
+					//bottom square is valid
+					squares[2] = x + 7;
+				}
+				if (x > 6)
+				{
+					//top square is valid
+					squares[4] = x - 7;
+				}
+
+				//iterate through the four surrounding squares checking for the currentLine
+				for (int x = 0; x < 4; x++)
+				{
+					//check which square also contains the line we might captured
+					if (squares[x] != NULL)
+					{
+						//this square contains the line
+						if (arrySqr[squares[x]].containsLine((*currentLine)))
+						{
+							//check to see if we continue the search
+							//or if the next square can be captured after we capture the previous line
+							if (arrySqr[squares[x]].linesLeftToCapture() == 2)
+							{
+								//get next line to check in the loop
+								vector<Line*> linesLeft = arrySqr[squares[x]].linesNotCaught();
+								if (linesLeft[0] != (*currentLine))
+									nextChain.push_back(linesLeft[0]);
+								else if (linesLeft[1] != (*currentLine))
+									nextChain.push_back(linesLeft[1]);
+								break;
+							}
+						}
+					}
+				}
+				currentLine++;
+			}
+		}
+		//check the chain we just created
+		if (nextChain.size() > bestChain.size())
+		{
+			bestChain.clear();
+			bestChain = nextChain;
+		}
+	}
+	return bestChain;
+}
+
+vector<Line*> Data::getFreeLines()
+{
+	vector<Line*> freeLineList;
+	//add horizontal lines
+	for (int x = 0; x < 7; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			if (!hLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&hLine[x][y]);
+		}
+	}
+	//add vertical lines
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 7; y++)
+		{
+			if (!vLine[x][y].getOn())
+				//add Line item to free list
+				freeLineList.push_back(&vLine[x][y]);
+		}
+	}
+	return freeLineList;
+}
+
+vector<Square*> Data::getFreeSquares()
+{
+	vector<Square*> freeSquareList;
+	//populate square list with all squares
+	//initialize square object with pointers to lines that make it up
+	for (int x = 0; x < 49; x++)
+	{
+		Line *top = &hLine[x % 7][x / 7];
+		Line *bottom = &hLine[x % 7][x / 7 + 1];
+		Line *left = &vLine[x % 7][x / 7];
+		Line *right = &vLine[(x % 7) + 1][x / 7];
+		arrySqr[x].setLines(left, right, top, bottom);
 		freeSquareList.push_back(&arrySqr[x]);
 	}
-
+	return freeSquareList;
 }
 
-/*//METHODS FOR MINIMAX
-//add a line into gamestate
-//returns number of boxes completed(0,1, or 2)
-int Data::addLine(Line line)
+vector<Line*> Data::getSecondLines()
 {
-	int x = 0;
-	//TO DO
-	//add a line into gamestate
-	//returns number of boxes completed(0, 1, or 2)
-	return x;
-}
-
-//returns copy of game state
-Data Data::clone()
-{
-	Data gameClone;
-	//TO DO
-	//create copy of this Data class
-
-	return gameClone;
-}
-
-char* Data::MinMax()
-{
-	Data gameClone = clone();
-	Line bestMove;// = MaxMove(gameClone);
-	return bestMove.getInput();
-}
-
-Line Data::MaxMove(Data gameClone)
-{
-//	MaxMove(GamePosition game) {
-	if ( gameClone.checkEndGame() )
+	vector<Square*> freeSquares = getFreeSquares();
+	vector<Line*> bestSecondLines;
+	//iterate through all free squares and grab lines that have not been completed
+	for (vector<Square*>::iterator iter = freeSquares.begin(); iter != freeSquares.end(); ++iter)
 	{
-		return gameClone.evalGameState();
-	}
-	else 
-	{
-		Line best_move, tmp_move;
-		vector<Line*> moves = gameClone.getRemainingLines();
-//		for (vector<Line*>::const_iterator current = moves.begin; current-> != moves.empty ; ++current)
+		if ((*iter)->linesLeftToCapture() > 2)
 		{
-			//tmp_move;// = MinMove(gameClone.applyMove(moves[current]));
-			if ( Data::addLine(tmp_move) > Data::addLine(best_move) )
-				best_move = tmp_move;
+			//get the lines that can be caught in this square
+			vector<Line*> tmp = (*iter)->linesNotCaught();
+
+			//iterate through lines and make sure they will not complete the other square
+			for (vector<Line*>::iterator iter = tmp.end(); iter != tmp.begin();--iter)
+			{
+				if ( (arrySqr[(*iter)->getSquare1()].linesLeftToCapture() == 2) || (arrySqr[(*iter)->getSquare2()].linesLeftToCapture == 2) )
+				{
+					//if the line will create a capturable square
+					//delete it from the vector
+					tmp.erase(iter);
+				}
+			}
 		}
-		return best_move;
 	}
+
+	return bestSecondLines;
 }
-
-Line Data::MinMove(Data gameClone)
-{
-	Line best_move;
-//MaxMove (GamePosition game) {
-//		best_move <-{};
-//		moves <-GenerateMoves(game);
-//		ForEach moves{
-//			move <-MaxMove(ApplyMove(game));
-//			if (Value(move) > Value(best_move)) {
-//				best_move < -move;
-	return best_move;
-
-}*/

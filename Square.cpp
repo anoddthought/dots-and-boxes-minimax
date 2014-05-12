@@ -2,6 +2,7 @@
 #include "Line.h"
 #include <string>
 #include <iostream>
+
 using namespace std;
 
 
@@ -64,13 +65,29 @@ int Square::linesLeftToCapture()
 	return count;
 }
 
-Line* Square::lineNotCaught()
+vector<Line*> Square::linesNotCaught()
 {
+	vector<Line*> linesLeft;
 	if (!left->getOn())
-		return left;
+		linesLeft.push_back(left);
 	if (!right->getOn())
-		return right;
+		linesLeft.push_back(left);
 	if (!top->getOn())
-		return top;
-	return bottom;
+		linesLeft.push_back(left);
+	if (!bottom->getOn())
+		linesLeft.push_back(left);
+	return linesLeft;
+}
+
+bool Square::containsLine(Line *tmp)
+{
+	if (tmp == left)
+		return true;
+	if (tmp == right)
+		return true;
+	if (tmp == top)
+		return true;
+	if (tmp == bottom)
+		return true;
+	return false;
 }
